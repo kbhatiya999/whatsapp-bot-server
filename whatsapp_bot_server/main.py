@@ -59,8 +59,19 @@ async def receive_message(
                 message_from = message['from']
                 # print(message)
                 print(message_id, message_from, message_text)
-                
-                data_send = wm.get_text_message_input(message_from, message_text, message_id)
+                data_send = wm.get_text_message_input(recipient=message_from,
+                                                       text=message_text,
+                                                        reply_to=message_id)
+                wm.send_message(data_send)
+            elif message['type'] == 'image':
+                message_id = message['id']
+                message_from = message['from']
+                image = message['image']
+                image_mime_type = image['mime_type']
+                image_id = image['id']
+                data_send = wm.get_image_message_input(recipient=message_from,
+                                                        image_link='https://lh3.googleusercontent.com/7MlzI0lw6bFS9zlH1PNs-8cGH9utkky2mqCNF3MX2QdMX6Cje0FEbsh5yHI70ZZ8CfwV2L8310OgneQ7ct6vZSlg=w640-h400-e365-rj-sc0x00ffffff',
+                                                        reply_to=message_id)
                 wm.send_message(data_send)
             elif message['type'] == 'document':
                 print(message)
