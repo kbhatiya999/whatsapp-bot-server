@@ -55,10 +55,19 @@ async def receive_message(
 
             if message['type'] == 'text':
                 message_id = message['id']
-                message_text = message['text']['body']
+                message_text: str = message['text']['body']
                 message_from = message['from']
                 # print(message)
                 print(message_id, message_from, message_text)
+
+                # verify
+                if message_text.startswith('/verify '):
+                    verification_status = message_text[8:] == 'ABCDEF'
+                    if verification_status:
+                        message_text = 'Registered'
+                    else:
+                        message_text = "Failed to Register"
+
                 data_send = wm.get_text_message_input(recipient=message_from,
                                                        text=message_text,
                                                         reply_to=message_id)
