@@ -7,7 +7,9 @@ from pydantic import BaseModel
 import pathlib
 from config import config
 from whatsapp_bot_server.flights import get_flights
-from whatsapp_bot_server.message_helper import get_templated_message_input, get_text_message_input, send_message
+from whatsapp_bot_server.message_helper import WhatsAppMessenger
+
+wm = WhatsAppMessenger()
 
 print(pathlib.Path.cwd())
 static_dir = (pathlib.Path(__file__).parent / 'static')
@@ -58,8 +60,8 @@ async def receive_message(
                 # print(message)
                 print(message_id, message_from, message_text)
                 
-                data_send = get_text_message_input(message_from, message_text, message_id)
-                await send_message(data_send)
+                data_send = wm.get_text_message_input(message_from, message_text, message_id)
+                wm.send_message(data_send)
             elif message['type'] == 'document':
                 print(message)
 
@@ -79,9 +81,9 @@ def index(request: Request):
 
 @app.post('/welcome')
 async def welcome():
-    data = get_text_message_input(config.recipient_waid, 'Welcome to the Flight Confirmation Demo App for Python!')
+    data = wm.get_text_message_input(config.recipient_waid, 'Welcome to the Flight Confirmation Demo App for Python!')
 
-    await send_message(data)
+    wm.send_message(data)
     return RedirectResponse(url="/catalog", status_code=303)
 
 @app.get("/catalog", response_class=HTMLResponse)
@@ -100,9 +102,9 @@ async def buy_ticket(flight_id: int = Form(..., alias='id')):
 
     # Assuming RECIPIENT_WAID is a configuration variable, you need to set it up
     recipient_waid = "your_recipient_waid"
-    data = get_templated_message_input(config.recipient_waid, flight)
+    data = wm.get_templated_message_input(config.recipient_waid, flight)
 
-    await send_message(data)
+    wm.send_message(data)
     return RedirectResponse(url="/catalog", status_code=303)
 
 
